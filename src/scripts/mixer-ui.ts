@@ -1,4 +1,4 @@
-import { AudioEngine, SOUNDS, PRESETS } from './audio-engine';
+import { AudioEngine, SOUNDS, PRESETS, type SoundState } from './audio-engine';
 
 export function initMixer() {
   const engine = new AudioEngine();
@@ -34,7 +34,7 @@ export function initMixer() {
     const initial = engine.getSoundState(sound.id);
     if (initial) {
       volumeInput.value = String(Math.round(initial.volume * 100));
-      applyCardOnState(card, toggleBtn, initial.on);
+      applyCardState(card, toggleBtn, initial);
     }
 
     toggleBtn.addEventListener('click', () => {
@@ -53,16 +53,18 @@ export function initMixer() {
     const missingBadge = card.querySelector<HTMLElement>('[data-role="missing"]')!;
     const volumeInput = card.querySelector<HTMLInputElement>('[data-role="volume"]')!;
 
-    applyCardOnState(card, toggleBtn, state.on);
+    applyCardState(card, toggleBtn, state);
     volumeInput.value = String(Math.round(state.volume * 100));
     missingBadge.hidden = !state.unavailable;
   });
 
-  function applyCardOnState(card: HTMLElement, toggleBtn: HTMLButtonElement, on: boolean) {
-    card.dataset.on = String(on);
-    toggleBtn.setAttribute('aria-pressed', String(on));
+  function applyCardState(card: HTMLElement, toggleBtn: HTMLButtonElement, state: SoundState) {
+    card.dataset.on = String(state.on);
+    card.dataset.loading = String(state.loading);
+    toggleBtn.setAttribute('aria-pressed', String(state.on));
+    toggleBtn.setAttribute('aria-busy', String(state.loading));
     const status = card.querySelector<HTMLElement>('[data-role="status"]')!;
-    status.textContent = on ? 'Playing' : 'Tap to play';
+    status.textContent = state.loading ? 'Loading…' : state.on ? 'Playing' : 'Tap to play';
   }
 
   // ---------------------------------------------------------------------

@@ -5,12 +5,15 @@ const STORAGE_KEY = 'calmnoise:mix:v1';
 // Base-aware — resolves correctly whether deployed at the domain root or
 // under a GitHub Pages project path like /CalmNoise/.
 const WORKLET_URL = `${BASE}worklets/noise-processor.js`;
-const RAMP_SECONDS = 0.05;
+// Fade duration for both starting and stopping a sound (including the
+// individual per-sound stop the sleep timer triggers when it ends).
+const FADE_SECONDS = 0.4;
 
 export interface SoundState {
   on: boolean;
   volume: number; // 0..1
   unavailable: boolean;
+  loading: boolean;
 }
 
 interface PersistedState {
@@ -23,6 +26,10 @@ interface SoundRuntime {
   gain: GainNode | null;
   source: AudioWorkletNode | AudioBufferSourceNode | ScriptProcessorNode | null;
   buffer: AudioBuffer | null;
+  /** Loop boundaries (seconds) computed once a file is decoded — see
+   *  findSeamlessLoopPoints() — so repeats don't click or gap. */
+  loopStart: number;
+  loopEnd: number;
   state: SoundState;
 }
 
@@ -45,6 +52,7 @@ export class AudioEngine extends EventTarget {
   private sleepInterval: number | null = null;
 
   private persistTimeout: number | null = null;
+  private mediaSessionReady = false;
 
   constructor() {
     super();
@@ -54,10 +62,24 @@ export class AudioEngine extends EventTarget {
         gain: null,
         source: null,
         buffer: null,
-        state: { on: false, volume: def.defaultVolume, unavailable: false },
+        loopStart: 0,
+        loopEnd: 0,
+        state: { on: false, volume: def.defaultVolume, unavailable: false, loading: false },
       });
     }
     this.loadPersisted();
+
+    // Mobile browsers may suspend the AudioContext when the tab is
+    // backgrounded despite an active Media Session; resume it once the user
+    // comes back if playback is supposed to still be running. This never
+    // pauses anything on hide — only recovers a suspended context on show.
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && this.isRunning && this.ctx?.state === 'suspended') {
+          void this.ctx.resume();
+        }
+      });
+    }
   }
 
   // ---------------------------------------------------------------------
@@ -104,7 +126,53 @@ export class AudioEngine extends EventTarget {
     this.masterGain = master;
     this.sleepGain = sleep;
 
+    this.setupMediaSession();
+
     return ctx;
+  }
+
+  /**
+   * Lets the OS/lock-screen/notification-shade show playback controls and
+   * treat this tab as active media, which is also what keeps mobile browsers
+   * from aggressively suspending audio when the app is backgrounded.
+   */
+  private setupMediaSession() {
+    if (this.mediaSessionReady) return;
+    if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+    this.mediaSessionReady = true;
+
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'CalmNoise — Ambient Mix',
+        artist: 'White noise, nature sounds & focus mixer',
+        album: 'CalmNoise',
+        artwork: [
+          { src: `${BASE}icons/icon-192.png`, sizes: '192x192', type: 'image/png' },
+          { src: `${BASE}icons/icon-512.png`, sizes: '512x512', type: 'image/png' },
+        ],
+      });
+
+      navigator.mediaSession.setActionHandler('play', () => {
+        void this.play();
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        void this.pause();
+      });
+      navigator.mediaSession.setActionHandler('stop', () => {
+        void this.pause();
+      });
+    } catch {
+      // Media Session is progressive enhancement — ignore unsupported browsers.
+    }
+  }
+
+  private updatePlaybackState() {
+    if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.playbackState = this.isRunning ? 'playing' : 'paused';
+    } catch {
+      // Ignore — progressive enhancement only.
+    }
   }
 
   private async ensureWorklet(ctx: AudioContext): Promise<boolean> {
@@ -213,6 +281,9 @@ export class AudioEngine extends EventTarget {
     const ctx = this.ensureContext();
     const gain = this.getOrCreateGain(runtime);
 
+    runtime.state.loading = true;
+    this.emitSound(runtime);
+
     try {
       if (runtime.def.kind === 'noise') {
         const node = await this.createNoiseNode(ctx, runtime.def.noiseType!);
@@ -223,6 +294,8 @@ export class AudioEngine extends EventTarget {
         const source = ctx.createBufferSource();
         source.buffer = buffer;
         source.loop = true;
+        source.loopStart = runtime.loopStart;
+        source.loopEnd = runtime.loopEnd;
         source.connect(gain);
         source.start(0);
         runtime.source = source;
@@ -231,11 +304,13 @@ export class AudioEngine extends EventTarget {
       runtime.state.unavailable = false;
       gain.gain.cancelScheduledValues(ctx.currentTime);
       gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(runtime.state.volume, ctx.currentTime + RAMP_SECONDS);
-    } catch (err) {
+      gain.gain.linearRampToValueAtTime(runtime.state.volume, ctx.currentTime + FADE_SECONDS);
+    } catch {
       runtime.state.on = false;
       runtime.state.unavailable = true;
       runtime.source = null;
+    } finally {
+      runtime.state.loading = false;
       this.emitSound(runtime);
     }
   }
@@ -246,21 +321,26 @@ export class AudioEngine extends EventTarget {
 
     const ctx = this.ctx;
     if (gain && ctx) {
-      gain.gain.cancelScheduledValues(ctx.currentTime);
-      gain.gain.setTargetAtTime(0, ctx.currentTime, 0.03);
+      const now = ctx.currentTime;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.linearRampToValueAtTime(0, now + FADE_SECONDS);
     }
 
-    // Give the fade a moment before actually tearing down the node.
-    window.setTimeout(() => {
-      try {
-        if (source instanceof AudioBufferSourceNode) {
-          source.stop();
+    // Let the fade finish audibly before actually tearing down the node.
+    window.setTimeout(
+      () => {
+        try {
+          if (source instanceof AudioBufferSourceNode) {
+            source.stop();
+          }
+          source.disconnect();
+        } catch {
+          // Already stopped/disconnected — safe to ignore.
         }
-        source.disconnect();
-      } catch {
-        // Already stopped/disconnected — safe to ignore.
-      }
-    }, 120);
+      },
+      FADE_SECONDS * 1000 + 50
+    );
 
     runtime.source = null;
   }
@@ -317,6 +397,9 @@ export class AudioEngine extends EventTarget {
     return node;
   }
 
+  /** Fetches, decodes, and caches a sound's buffer (and its loop points) the
+   *  first time it's needed — never on page load — so re-toggling later is
+   *  instant. */
   private async getBuffer(ctx: AudioContext, def: SoundDef): Promise<AudioBuffer> {
     const runtime = this.runtimes.get(def.id)!;
     if (runtime.buffer) return runtime.buffer;
@@ -327,7 +410,11 @@ export class AudioEngine extends EventTarget {
     }
     const arrayBuffer = await response.arrayBuffer();
     const buffer = await ctx.decodeAudioData(arrayBuffer);
+    const { loopStart, loopEnd } = findSeamlessLoopPoints(buffer);
+
     runtime.buffer = buffer;
+    runtime.loopStart = loopStart;
+    runtime.loopEnd = loopEnd;
     return buffer;
   }
 
@@ -493,6 +580,7 @@ export class AudioEngine extends EventTarget {
   }
 
   private emitMaster() {
+    this.updatePlaybackState();
     this.dispatchEvent(
       new CustomEvent('masterchange', { detail: { isRunning: this.isRunning, masterVolume: this.masterVolume } })
     );
@@ -505,6 +593,60 @@ export class AudioEngine extends EventTarget {
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
+}
+
+/**
+ * Picks loop boundaries that avoid both a silent gap and an audible
+ * click/pop at the seam: trims any near-silent padding at each edge, then
+ * snaps to the lowest-amplitude sample nearby (close to a zero-crossing) so
+ * the signal value doesn't jump discontinuously when the loop wraps.
+ * Approximated on channel 0 only — a reasonable simplification for the
+ * ambient/texture source material this app uses.
+ */
+function findSeamlessLoopPoints(buffer: AudioBuffer): { loopStart: number; loopEnd: number } {
+  const data = buffer.getChannelData(0);
+  const length = data.length;
+  const sampleRate = buffer.sampleRate;
+
+  const silenceThreshold = 0.015;
+  const maxTrim = Math.min(length >> 1, Math.floor(sampleRate * 0.5)); // trim at most 0.5s per edge
+
+  let start = 0;
+  while (start < maxTrim && Math.abs(data[start]) < silenceThreshold) start++;
+
+  let end = length - 1;
+  const minEnd = length - maxTrim;
+  while (end > minEnd && Math.abs(data[end]) < silenceThreshold) end--;
+
+  const searchWindow = Math.min(2000, Math.floor(sampleRate * 0.05));
+  start = snapToLowAmplitude(data, start, searchWindow, 1);
+  end = snapToLowAmplitude(data, end, searchWindow, -1);
+
+  if (end <= start) {
+    return { loopStart: 0, loopEnd: buffer.duration };
+  }
+
+  return { loopStart: start / sampleRate, loopEnd: end / sampleRate };
+}
+
+/** Searches up to `searchWindow` samples in `direction` for a lower-amplitude
+ *  sample than the one at `index`, to land the loop edge near a zero
+ *  crossing instead of an arbitrary (possibly high-amplitude) sample. */
+function snapToLowAmplitude(data: Float32Array, index: number, searchWindow: number, direction: 1 | -1): number {
+  let best = index;
+  let bestAbs = Math.abs(data[index] ?? 0);
+  const limit = direction === 1 ? Math.min(data.length - 1, index + searchWindow) : Math.max(0, index - searchWindow);
+
+  for (let i = index; direction === 1 ? i <= limit : i >= limit; i += direction) {
+    const value = Math.abs(data[i]);
+    if (value < bestAbs) {
+      bestAbs = value;
+      best = i;
+    }
+    if (value < 0.001) break;
+  }
+
+  return best;
 }
 
 export { SOUNDS, PRESETS };

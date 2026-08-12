@@ -71,6 +71,13 @@ it does the app try to fetch/decode it, and on failure it shows a small
 "Audio file not found" note on that card instead of throwing — nothing else
 on the page is affected.
 
+Files are fetched lazily — nothing downloads until a card is first toggled on
+— and the decoded buffer is then cached in memory, so re-toggling the same
+sound later is instant. While a file is loading, its card shows a brief
+spinning-icon state. Loop points are computed automatically once decoded
+(trimming any silent padding and snapping to a low-amplitude sample at each
+edge) so playback repeats seamlessly without a click or gap.
+
 ## Adding a new sound
 
 1. Drop the audio file in `public/sounds/` (skip this step for a
@@ -153,7 +160,27 @@ import AdSlot from '../components/AdSlot.astro';
 
 - `public/manifest.webmanifest` — installable app metadata.
 - `public/sw.js` — network-first for page navigations, stale-while-revalidate
-  for static assets/audio, so the app (and any nature sounds you've already
-  played once) keep working offline.
+  for static assets/audio. Sound files are **not** precached on install (they
+  can be several MB each) — a file only enters the cache the first time it's
+  actually played, after which it keeps working offline.
 - Icons are generated PNGs (no external image tooling required); regenerate
   with `npm run icons` if you change the brand colors in `src/config/site.ts`.
+
+## Background playback on mobile
+
+`src/scripts/audio-engine.ts` implements the
+[Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API):
+it sets `navigator.mediaSession.metadata` (title/artist/artwork) and
+play/pause/stop action handlers, so lock-screen and notification-shade media
+controls work, and keeps `playbackState` in sync. The app never pauses audio
+on `visibilitychange`/`blur` — locking the phone or switching apps should not
+stop playback. If the browser suspends the `AudioContext` while backgrounded
+anyway, it's automatically resumed either when the user returns to the tab or
+when a Media Session "play" action fires.
+
+**iOS Safari note:** background audio for a plain browser tab is limited by
+iOS itself and can still pause when the screen locks or you switch apps,
+regardless of what a web page does. For the most reliable background
+playback on iPhone/iPad, install CalmNoise to the home screen (Share →
+"Add to Home Screen") and run it as an installed PWA rather than a Safari
+tab.

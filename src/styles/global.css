@@ -359,6 +359,17 @@ h1, h2, h3 {
   50% { opacity: 0.85; transform: scale(1.012); }
 }
 
+/* Small loading indicator while a file-based sound is being fetched/decoded
+   for the first time — just a subtle spin on the existing icon, no new
+   elements, so the visual design stays otherwise untouched. */
+.sound-card[data-loading="true"] [data-role="icon-wrap"] svg {
+  animation: icon-spin 900ms linear infinite;
+}
+
+@keyframes icon-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ===========================================================================
    Range sliders — glass track + glass bead thumb
    ===========================================================================
