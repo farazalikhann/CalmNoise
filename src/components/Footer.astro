@@ -4,17 +4,17 @@ import { BASE as base } from '../utils/base';
 const year = new Date().getFullYear();
 ---
 
-<footer class="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
-  <div class="glass px-6 py-8 sm:px-8">
+<footer class="mx-auto max-w-[1600px] px-4 pb-8 pt-4 sm:px-6 lg:px-10">
+  <div class="glass px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
     <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
       <div class="max-w-sm">
-        <p class="text-sm font-medium tracking-wide text-text">{SITE.name}</p>
-        <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+        <p class="text-sm font-medium tracking-wide text-text lg:text-base">{SITE.name}</p>
+        <p class="mt-2 text-sm font-light leading-relaxed text-text-muted lg:text-base">
           A free, private ambient sound mixer for focus, study, relaxation, and sleep.
           Everything runs locally in your browser — nothing you play is ever uploaded.
         </p>
       </div>
-      <nav aria-label="Footer" class="grid grid-cols-2 gap-x-10 gap-y-2 text-sm font-light text-text-muted sm:flex sm:gap-8">
+      <nav aria-label="Footer" class="grid grid-cols-2 gap-x-10 gap-y-2 text-sm font-light text-text-muted sm:flex sm:gap-8 lg:text-base">
         <a href={`${base}about`} class="transition-colors duration-300 hover:text-text">About</a>
         <a href={`${base}contact`} class="transition-colors duration-300 hover:text-text">Contact</a>
         <a href={`${base}privacy-policy`} class="transition-colors duration-300 hover:text-text">Privacy Policy</a>

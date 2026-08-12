@@ -9,31 +9,31 @@ import SoundCard from './SoundCard.astro';
        always reachable while scrolling. -->
   <div
     id="mixer-transport"
-    class="glass flex items-center justify-between gap-3 p-3 lg:gap-4 lg:p-5"
+    class="glass flex items-center justify-between gap-3 p-3 lg:gap-6 lg:p-6"
   >
-    <div class="flex min-w-0 items-center gap-3 lg:gap-4">
+    <div class="flex min-w-0 items-center gap-3 lg:gap-5">
       <button
         type="button"
         id="master-toggle"
-        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-bg shadow-lg shadow-accent/25 transition-all duration-300 ease-out hover:scale-105 hover:shadow-accent/40 active:scale-95 lg:h-14 lg:w-14"
+        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-bg shadow-lg shadow-accent/25 transition-all duration-300 ease-out hover:scale-105 hover:shadow-accent/40 active:scale-95 lg:h-16 lg:w-16"
         aria-pressed="false"
         aria-label="Play mix"
       >
-        <svg id="master-icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" class="lg:h-[22px] lg:w-[22px]">
+        <svg id="master-icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" class="lg:h-7 lg:w-7">
           <path d="M8 5v14l11-7L8 5Z"></path>
         </svg>
-        <svg id="master-icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" class="hidden lg:h-[22px] lg:w-[22px]">
+        <svg id="master-icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" class="hidden lg:h-7 lg:w-7">
           <path d="M7 5h4v14H7zM13 5h4v14h-4z"></path>
         </svg>
       </button>
       <div class="min-w-0">
-        <p class="truncate text-sm font-medium tracking-wide text-text lg:text-base" id="master-status">Paused</p>
-        <p class="hidden text-xs font-light text-text-faint lg:block" data-focus-hide>Tap any sound below, or press play to resume your last mix.</p>
+        <p class="truncate text-sm font-medium tracking-wide text-text lg:text-lg" id="master-status">Paused</p>
+        <p class="hidden text-xs font-light text-text-faint lg:block lg:text-sm" data-focus-hide>Tap any sound below, or press play to resume your last mix.</p>
       </div>
     </div>
 
-    <div class="flex min-w-[110px] flex-1 items-center gap-2 lg:w-56 lg:flex-none lg:gap-3">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden shrink-0 text-text-muted sm:block">
+    <div class="flex min-w-[110px] flex-1 items-center gap-2 lg:w-72 lg:flex-none lg:gap-3">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden shrink-0 text-text-muted sm:block lg:h-5 lg:w-5">
         <path d="M4 9v6h4l5 4V5L8 9H4Z" stroke-linejoin="round"></path>
       </svg>
       <input type="range" min="0" max="100" value="80" id="master-volume" class="min-w-0 flex-1" aria-label="Master volume" />
@@ -41,12 +41,12 @@ import SoundCard from './SoundCard.astro';
   </div>
 
   <!-- Presets -->
-  <div class="mt-6 flex flex-wrap gap-2 lg:mt-10 lg:gap-3" role="group" aria-label="Presets" data-focus-hide>
+  <div class="mt-6 flex flex-wrap gap-2 lg:mt-10 lg:gap-4" role="group" aria-label="Presets" data-focus-hide>
     {
       PRESETS.map((preset) => (
         <button
           type="button"
-          class="preset-btn glass inline-flex min-h-11 items-center justify-center px-4 py-2 text-sm font-light text-text-muted transition-all duration-300 ease-out hover:text-text lg:text-base"
+          class="preset-btn glass inline-flex min-h-11 items-center justify-center px-4 py-2 text-sm font-light text-text-muted transition-all duration-300 ease-out hover:text-text lg:px-6 lg:py-3 lg:text-lg"
           style="border-radius: 999px;"
           data-preset-id={preset.id}
           title={preset.description}
