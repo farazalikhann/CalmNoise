@@ -360,13 +360,28 @@ h1, h2, h3 {
 }
 
 /* Small loading indicator while a file-based sound is being fetched/decoded
-   for the first time — just a subtle spin on the existing icon, no new
-   elements, so the visual design stays otherwise untouched. */
-.sound-card[data-loading="true"] [data-role="icon-wrap"] svg {
-  animation: icon-spin 900ms linear infinite;
+   for the first time — a classic spinning ring over the dimmed icon, in the
+   app's accent color, so it reads clearly as "loading" rather than a strange
+   spinning icon shape. */
+.sound-card [data-role="icon-wrap"] {
+  position: relative;
 }
 
-@keyframes icon-spin {
+.sound-card[data-loading="true"] [data-role="icon-wrap"] svg {
+  opacity: 0.2;
+}
+
+.sound-card[data-loading="true"] [data-role="icon-wrap"]::after {
+  content: "";
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  border: 2px solid rgba(127, 216, 201, 0.25);
+  border-top-color: var(--color-accent);
+  animation: spinner-rotate 700ms linear infinite;
+}
+
+@keyframes spinner-rotate {
   to { transform: rotate(360deg); }
 }
 
@@ -524,6 +539,13 @@ html.focus-mode #mixer-transport {
      fixed bar never covers it once the user scrolls all the way down. */
   footer {
     padding-bottom: 6.5rem;
+  }
+
+  /* The scene-picker/Focus Mode buttons also float bottom-right — raise them
+     clear of the fixed player bar above so the two never overlap. */
+  .floating-controls {
+    bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+    right: calc(1rem + env(safe-area-inset-right, 0px));
   }
 }
 
