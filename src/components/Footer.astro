@@ -1,0 +1,27 @@
+---
+import { SITE } from '../config/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6">
+  <div class="glass px-6 py-8 sm:px-8">
+    <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+      <div class="max-w-sm">
+        <p class="text-sm font-medium tracking-wide text-text">{SITE.name}</p>
+        <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+          A free, private ambient sound mixer for focus, study, relaxation, and sleep.
+          Everything runs locally in your browser — nothing you play is ever uploaded.
+        </p>
+      </div>
+      <nav aria-label="Footer" class="grid grid-cols-2 gap-x-10 gap-y-2 text-sm font-light text-text-muted sm:flex sm:gap-8">
+        <a href="/about" class="transition-colors duration-300 hover:text-text">About</a>
+        <a href="/contact" class="transition-colors duration-300 hover:text-text">Contact</a>
+        <a href="/privacy-policy" class="transition-colors duration-300 hover:text-text">Privacy Policy</a>
+        <a href="/terms" class="transition-colors duration-300 hover:text-text">Terms of Use</a>
+      </nav>
+    </div>
+    <p class="mt-8 text-xs font-light text-text-faint">
+      &copy; {year} {SITE.name}. All sounds are generated or looped locally in your browser.
+    </p>
+  </div>
+</footer>

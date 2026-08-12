@@ -1,0 +1,56 @@
+---
+import type { SoundDef } from '../config/sounds';
+
+interface Props {
+  sound: SoundDef;
+}
+
+const { sound } = Astro.props;
+const volumePercent = Math.round(sound.defaultVolume * 100);
+---
+
+<div
+  class="sound-card glass group relative flex flex-col gap-3 p-4"
+  style="border-radius: 20px;"
+  data-sound-card
+  data-sound-id={sound.id}
+  data-on="false"
+>
+  <button
+    type="button"
+    class="flex items-center gap-3 text-left"
+    data-role="toggle"
+    aria-pressed="false"
+    aria-label={`Toggle ${sound.name}`}
+  >
+    <span
+      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-text-muted transition-all duration-300 ease-out group-data-[on=true]:bg-accent/25 group-data-[on=true]:text-accent"
+      data-role="icon-wrap"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" set:html={sound.icon} />
+    </span>
+    <span class="flex flex-col">
+      <span class="text-sm font-normal tracking-wide text-text">{sound.name}</span>
+      <span class="text-xs font-light text-text-faint" data-role="status">Tap to play</span>
+    </span>
+  </button>
+
+  <label class="flex items-center gap-2" aria-label={`${sound.name} volume`}>
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" class="shrink-0 text-text-faint">
+      <path d="M4 9v6h4l5 4V5L8 9H4Z" stroke-linejoin="round"></path>
+    </svg>
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value={volumePercent}
+      data-role="volume"
+      aria-label={`${sound.name} volume`}
+    />
+  </label>
+
+  <p class="text-[11px] font-light leading-snug text-text-faint" data-role="missing" hidden>
+    Audio file not found — add <code>{sound.file}</code> to <code>/public/sounds/</code>.
+  </p>
+</div>

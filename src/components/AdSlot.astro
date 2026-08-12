@@ -1,0 +1,44 @@
+---
+// Responsive AdSense placeholder. Renders an empty, clearly-labeled box until
+// ADSENSE_ENABLED is flipped to true in src/config/ads.ts, at which point it
+// renders a real <ins class="adsbygoogle"> unit using the configured IDs.
+import { ADSENSE_ENABLED, ADSENSE_CLIENT_ID, AD_SLOTS } from '../config/ads';
+
+interface Props {
+  placement: keyof typeof AD_SLOTS;
+  label: string;
+  class?: string;
+}
+
+const { placement, label, class: className = '' } = Astro.props;
+const slotId = AD_SLOTS[placement];
+---
+
+<!-- AdSense: {label} -->
+<div class:list={['ad-slot mx-auto w-full', className]} data-ad-placement={placement} data-focus-hide>
+  {
+    ADSENSE_ENABLED ? (
+      <ins
+        class="adsbygoogle block"
+        style="display:block"
+        data-ad-client={ADSENSE_CLIENT_ID}
+        data-ad-slot={slotId}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    ) : (
+      <div class="glass flex min-h-[90px] w-full items-center justify-center text-xs font-light uppercase tracking-wide text-text-faint opacity-70">
+        {label} — Ad space
+      </div>
+    )
+  }
+</div>
+{
+  ADSENSE_ENABLED && (
+    <script>
+      // Push a new ad request for this unit once the AdSense loader is present.
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  )
+}
+<!-- /AdSense: {label} -->

@@ -1,0 +1,67 @@
+---
+import '../styles/global.css';
+import SEO from '../components/SEO.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BackgroundScene from '../components/BackgroundScene.astro';
+import SceneControls from '../components/SceneControls.astro';
+import { SITE } from '../config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { title, description, path, noindex, jsonLd } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content={SITE.themeColor} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="generator" content={Astro.generator} />
+
+    <SEO title={title} description={description} path={path} noindex={noindex} jsonLd={jsonLd} />
+
+    <!--
+      AdSense loader (disabled until ADSENSE_ENABLED is true in src/config/ads.ts).
+      Once you have a real publisher ID from src/config/ads.ts, add:
+
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT_ID" crossorigin="anonymous"></script>
+    -->
+  </head>
+  <body class="relative min-h-screen overflow-x-hidden bg-bg font-sans font-light text-text antialiased">
+    <BackgroundScene />
+    <SceneControls />
+
+    <div class="flex min-h-screen flex-col">
+      <div data-focus-hide>
+        <Header />
+      </div>
+      <main class="flex-1">
+        <slot />
+      </main>
+      <div data-focus-hide>
+        <Footer />
+      </div>
+    </div>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {
+            // Offline support is a progressive enhancement — ignore registration failures.
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

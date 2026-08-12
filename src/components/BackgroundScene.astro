@@ -1,0 +1,40 @@
+---
+// Purely visual: fixed full-viewport scene layers, ambient particles, and a
+// readability overlay. No audio code here — see src/scripts/theme-controls.ts
+// for the (also visual-only) theme-switching logic.
+import { BACKGROUND_THEMES, DEFAULT_BACKGROUND_THEME } from '../config/backgrounds';
+
+const PARTICLE_COUNT = 26;
+const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+  left: (Math.random() * 100).toFixed(1),
+  size: (Math.random() * 3 + 1.5).toFixed(1),
+  duration: (Math.random() * 14 + 16).toFixed(1),
+  delay: (-Math.random() * 30).toFixed(1),
+  drift: (Math.random() * 60 - 30).toFixed(0),
+}));
+---
+
+<div id="scene-root" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+  {
+    BACKGROUND_THEMES.map((theme) => (
+      <div
+        class={`scene-layer scene-${theme.id}${theme.id === DEFAULT_BACKGROUND_THEME ? ' is-active' : ''}`}
+        data-scene-layer
+        data-theme-id={theme.id}
+      />
+    ))
+  }
+
+  <div class="scene-particles">
+    {
+      particles.map((p) => (
+        <span
+          class="scene-particle"
+          style={`left:${p.left}%; width:${p.size}px; height:${p.size}px; animation-duration:${p.duration}s; animation-delay:${p.delay}s; --drift:${p.drift}px;`}
+        />
+      ))
+    }
+  </div>
+
+  <div class="scene-overlay"></div>
+</div>

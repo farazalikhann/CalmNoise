@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Mixer from '../components/Mixer.astro';
+import AdSlot from '../components/AdSlot.astro';
+
+const faqs = [
+  {
+    question: 'Is this white noise online tool really free to use?',
+    answer:
+      'Yes. Every sound — procedural white, pink, and brown noise plus the looping nature tracks — plays for free, with no account, no sign-up, and no time limit. The mixer runs entirely in your browser using the Web Audio API.',
+  },
+  {
+    question: 'What are the best focus sounds for studying or working?',
+    answer:
+      'Steady, non-distracting sounds work best for concentration. Brown noise and pink noise are popular focus sounds because their deeper frequency balance is less fatiguing over long sessions than pure white noise. Try the "Deep Focus" preset, or blend brown noise with a soft cafe hum to mask sudden background noises.',
+  },
+  {
+    question: 'Why do rain sounds help with sleeping?',
+    answer:
+      'Rain sounds for sleeping work because they produce a consistent, broadband sound that masks sudden noises — a door closing, traffic, a snoring partner — which would otherwise startle you awake. The steady pattern also gives your mind a predictable, non-threatening signal to relax into.',
+  },
+  {
+    question: 'What is brown noise and how is it different from white noise?',
+    answer:
+      'Brown noise (also called red noise) rolls off high frequencies more steeply than pink or white noise, producing a deep, bassy rumble similar to a waterfall or heavy rainfall. White noise carries equal energy across all frequencies and sounds brighter and hissier — great for blocking speech, but some people find it harsher for long listening.',
+  },
+  {
+    question: 'Does this sound mixer work offline or need an account?',
+    answer:
+      'No account is ever required. Once you have loaded the page, the procedurally generated noise sounds keep working offline, and the app can be installed as a Progressive Web App (PWA) for quick access from your home screen or desktop.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.answer,
+    },
+  })),
+};
+---
+
+<BaseLayout jsonLd={[faqSchema]}>
+  <div data-focus-hide>
+    <AdSlot placement="headerBanner" label="Header Banner" class="max-w-6xl px-4 pt-6 sm:px-6" />
+  </div>
+
+  <section class="mx-auto max-w-6xl px-4 pb-2 pt-10 text-center sm:px-6 sm:pt-14" data-focus-hide>
+    <h1 class="text-3xl font-extralight tracking-wide text-text sm:text-4xl sm:tracking-wider">
+      White Noise &amp; Focus Sounds
+    </h1>
+    <p class="mx-auto mt-4 max-w-2xl text-balance text-base font-light leading-relaxed text-text-muted sm:text-lg">
+      Mix white, pink, and brown noise with rain, ocean, forest, and fireplace sounds — a free,
+      private ambient sound mixer for focus, study, and sleep. Nothing to install, nothing to sign up for.
+    </p>
+  </section>
+
+  <div class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[1fr_300px]">
+    <div>
+      <Mixer />
+      <div class="mt-2">
+        <AdSlot placement="belowMixer" label="Below Mixer" />
+      </div>
+    </div>
+    <aside class="hidden lg:block" data-focus-hide>
+      <div class="sticky top-24">
+        <AdSlot placement="sidebar" label="Sidebar" class="min-h-[250px]" />
+      </div>
+    </aside>
+  </div>
+
+  <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6" data-focus-hide>
+    <div class="glass px-6 py-8 sm:px-10 sm:py-10">
+      <h2 class="text-xl font-light tracking-wide text-text">How to use white noise for focus and sleep</h2>
+      <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
+        White noise online tools like this one work by covering up sudden, distracting sounds with a
+        steady, predictable one. For <strong class="font-normal text-text-muted">focus sounds</strong> during work
+        or study, start with a single layer — brown or pink noise — at a low-to-medium volume, just
+        loud enough to soften typing, traffic, or office chatter without becoming the center of your
+        attention. Increase the volume gradually rather than starting loud, and give your brain a
+        few minutes to adapt; most people stop noticing the sound entirely once they're absorbed in a task.
+      </p>
+      <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
+        For sleep, layering matters more than volume. Try soft <strong class="font-normal text-text-muted">rain
+        sounds for sleeping</strong> underneath a low fireplace crackle, or use the built-in "Sleep"
+        preset as a starting point. Set the sleep timer so the mix fades out and stops automatically —
+        this avoids the abrupt silence that can wake light sleepers when audio cuts off instantly.
+        Keep your device's screen brightness low or face-down once the timer is running, since light is
+        a much stronger sleep disruptor than sound.
+      </p>
+
+      <h2 class="mt-10 text-xl font-light tracking-wide text-text">Key Features</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-5 text-sm font-light leading-relaxed text-text-muted">
+        <li>Procedurally generated white, pink, and brown noise — no audio files, works instantly.</li>
+        <li>Seamlessly looping rain, thunderstorm, ocean, forest, cafe, fireplace, and fan sounds.</li>
+        <li>Mix multiple sounds at once, each with its own independent volume slider.</li>
+        <li>One-tap presets — Deep Focus, Rainy Cafe, and Sleep — for an instant, balanced mix.</li>
+        <li>Sleep timer with a smooth fade-out, so audio never cuts off abruptly.</li>
+        <li>Remembers your last mix locally, so it's ready the moment you come back.</li>
+        <li>Installable as an offline-capable PWA — no app store required.</li>
+        <li>100% client-side: nothing you play is ever uploaded, tracked, or stored on a server.</li>
+      </ul>
+
+      <h2 id="faq" class="mt-10 text-xl font-light tracking-wide text-text">Frequently Asked Questions</h2>
+      <div class="mt-4 space-y-5">
+        {
+          faqs.map((faq) => (
+            <div>
+              <h3 class="text-sm font-normal text-text">{faq.question}</h3>
+              <p class="mt-1 text-sm font-light leading-relaxed text-text-muted">{faq.answer}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site';
+
+const lastUpdated = 'August 12, 2026';
+---
+
+<BaseLayout
+  title={`Privacy Policy — ${SITE.name}`}
+  description={`How ${SITE.name} handles data: no accounts, no server-side storage, and what third-party services (like ads) may use cookies.`}
+  path="/privacy-policy"
+>
+  <article class="mx-auto max-w-2xl px-4 py-14 sm:px-6" data-focus-hide>
+   <div class="glass px-6 py-8 sm:px-10 sm:py-10">
+    <h1 class="text-2xl font-extralight tracking-wide text-text">Privacy Policy</h1>
+    <p class="mt-2 text-xs text-text-faint">Last updated: {lastUpdated}</p>
+
+    <p class="mt-6 text-sm font-light leading-relaxed text-text-muted">
+      {SITE.name} is designed to work entirely in your browser. This policy explains the little
+      data that does exist and how it's used.
+    </p>
+
+    <h2 class="mt-8 text-lg font-light tracking-wide text-text">No accounts, no server-side storage</h2>
+    <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+      There is no sign-up, login, or user account. We do not operate a backend that stores your
+      audio mix, listening habits, or any personal information. All sound generation and playback
+      happens locally on your device using the Web Audio API.
+    </p>
+
+    <h2 class="mt-8 text-lg font-light tracking-wide text-text">Local storage</h2>
+    <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+      Your last sound mix (which sounds are on, their volumes, and your master volume) is saved
+      using your browser's <code>localStorage</code>, purely so the app can restore it the next
+      time you visit. This data stays on your device and is never sent to us or anyone else. You
+      can clear it at any time by clearing your browser's site data for this domain.
+    </p>
+
+    <h2 class="mt-8 text-lg font-light tracking-wide text-text">Cookies and advertising</h2>
+    <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+      This site may display ads served by Google AdSense. If enabled, Google and its partners may
+      use cookies or similar technologies to serve ads based on your prior visits to this or other
+      websites. You can opt out of personalized advertising by visiting
+      <a href="https://adssettings.google.com" class="text-accent underline decoration-dotted underline-offset-2" rel="nofollow noopener" target="_blank">Google's Ads Settings</a>.
+      Learn more about how Google uses data at
+      <a href="https://policies.google.com/technologies/partner-sites" class="text-accent underline decoration-dotted underline-offset-2" rel="nofollow noopener" target="_blank">policies.google.com/technologies/partner-sites</a>.
+    </p>
+
+    <h2 class="mt-8 text-lg font-light tracking-wide text-text">Analytics</h2>
+    <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+      This site currently does not run any analytics or tracking scripts. If that changes in the
+      future, this policy will be updated accordingly.
+    </p>
+
+    <h2 class="mt-8 text-lg font-light tracking-wide text-text">Children's privacy</h2>
+    <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+      This site is not directed at children under 13 and does not knowingly collect personal
+      information from anyone.
+    </p>
+
+    <h2 class="mt-8 text-lg font-light tracking-wide text-text">Changes to this policy</h2>
+    <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+      We may update this policy occasionally. Changes will be posted on this page with an updated
+      revision date.
+    </p>
+
+    <h2 class="mt-8 text-lg font-light tracking-wide text-text">Contact</h2>
+    <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
+      Questions about this policy? Visit the
+      <a href="/contact" class="text-accent underline decoration-dotted underline-offset-2">contact page</a>.
+    </p>
+   </div>
+  </article>
+</BaseLayout>

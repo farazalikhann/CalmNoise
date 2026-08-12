@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site';
+---
+
+<BaseLayout
+  title={`About — ${SITE.name}`}
+  description="Learn about CalmNoise, a free, private, client-side white noise and ambient sound mixer built for focus and sleep."
+  path="/about"
+>
+  <article class="mx-auto max-w-2xl px-4 py-14 sm:px-6" data-focus-hide>
+    <div class="glass px-6 py-8 sm:px-10 sm:py-10">
+      <h1 class="text-2xl font-extralight tracking-wide text-text">About {SITE.name}</h1>
+      <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
+        {SITE.name} is a small, focused tool: a sound mixer that blends procedurally generated noise
+        with ambient nature recordings so you can build the exact background atmosphere you need to
+        concentrate, relax, or fall asleep.
+      </p>
+      <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
+        There's no account system, no tracking of what you listen to, and no server involved in
+        playback at all — every sound is generated or decoded directly in your browser using the Web
+        Audio API. Your mix is remembered locally on your device only, using your browser's storage,
+        and is never transmitted anywhere.
+      </p>
+      <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
+        We built {SITE.name} because most white noise apps are either locked behind subscriptions or
+        bury the actual playback controls under logins and app-store downloads. This one loads
+        instantly, works offline once installed, and stays out of your way.
+      </p>
+      <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
+        Have feedback or a sound you'd like to see added? Reach out via the
+        <a href="/contact" class="text-accent underline decoration-dotted underline-offset-2">contact page</a>.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

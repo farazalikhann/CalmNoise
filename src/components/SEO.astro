@@ -1,0 +1,69 @@
+---
+import { SITE } from '../config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string; // e.g. "/about" — defaults to current URL path
+  noindex?: boolean;
+  /** Extra JSON-LD objects to inject in addition to the default WebApplication schema. */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  path = Astro.url.pathname,
+  noindex = false,
+  jsonLd = [],
+} = Astro.props;
+
+const canonicalURL = new URL(path, SITE.url).toString();
+const ogImage = new URL('/og-image.png', SITE.url).toString();
+
+const webApplicationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: SITE.name,
+  url: SITE.url,
+  description: SITE.description,
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'Any (runs in web browser)',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  browserRequirements: 'Requires a browser with Web Audio API support.',
+};
+
+const schemas = [webApplicationSchema, ...jsonLd];
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content={SITE.locale} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={SITE.twitterHandle} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- Structured data -->
+{
+  schemas.map((schema) => (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  ))
+}

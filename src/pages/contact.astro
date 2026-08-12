@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site';
+
+// TODO: replace with your real contact address before deploying.
+const CONTACT_EMAIL = 'hello@calmnoise.app';
+---
+
+<BaseLayout
+  title={`Contact — ${SITE.name}`}
+  description={`Get in touch with the ${SITE.name} team — feedback, sound requests, or questions.`}
+  path="/contact"
+>
+  <article class="mx-auto max-w-2xl px-4 py-14 sm:px-6" data-focus-hide>
+    <div class="glass px-6 py-8 sm:px-10 sm:py-10">
+      <h1 class="text-2xl font-extralight tracking-wide text-text">Contact</h1>
+      <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
+        Since {SITE.name} has no backend or account system, the simplest way to reach us is by email.
+        We read every message — bug reports, sound requests, and general feedback are all welcome.
+      </p>
+      <a
+        href={`mailto:${CONTACT_EMAIL}`}
+        class="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-all duration-300 ease-out hover:scale-105 active:scale-95"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M3 6h18v12H3z" stroke-linejoin="round"></path>
+          <path d="m3 7 9 6 9-6" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        {CONTACT_EMAIL}
+      </a>
+    </div>
+  </article>
+</BaseLayout>
