@@ -359,6 +359,19 @@ h1, h2, h3 {
   50% { opacity: 0.85; transform: scale(1.012); }
 }
 
+/* Highlights whichever preset was last applied — a static, subtle glow
+   (unlike the pulsing ring on active sound cards), cleared the moment the
+   user manually changes a sound or volume so it never claims a stale match. */
+.preset-btn[data-active="true"] {
+  background: rgba(127, 216, 201, 0.16);
+  border-color: rgba(127, 216, 201, 0.5);
+  color: var(--color-text);
+  box-shadow:
+    0 8px 20px -6px rgba(0, 0, 0, 0.3),
+    0 0 16px 1px rgba(127, 216, 201, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
 /* Small loading indicator while a file-based sound is being fetched/decoded
    for the first time — a classic spinning ring over the dimmed icon, in the
    app's accent color, so it reads clearly as "loading" rather than a strange

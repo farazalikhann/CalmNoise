@@ -39,10 +39,12 @@ export function initMixer() {
 
     toggleBtn.addEventListener('click', () => {
       void engine.toggleSound(sound.id);
+      setActivePreset(null);
     });
 
     volumeInput.addEventListener('input', () => {
       engine.setSoundVolume(sound.id, Number(volumeInput.value) / 100);
+      setActivePreset(null);
     });
   }
 
@@ -83,6 +85,7 @@ export function initMixer() {
 
   masterVolume.addEventListener('input', () => {
     engine.setMasterVolume(Number(masterVolume.value) / 100);
+    setActivePreset(null);
   });
 
   engine.onMasterChange(({ isRunning }) => {
@@ -96,10 +99,23 @@ export function initMixer() {
   // Presets
   // ---------------------------------------------------------------------
 
-  document.querySelectorAll<HTMLButtonElement>('.preset-btn').forEach((btn) => {
+  const presetButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.preset-btn'));
+
+  // Highlights whichever preset was last applied; cleared the moment the
+  // user manually changes a sound's on/off state or any volume, since the
+  // mix no longer necessarily matches that preset.
+  function setActivePreset(id: string | null) {
+    for (const btn of presetButtons) {
+      btn.dataset.active = String(btn.dataset.presetId === id);
+    }
+  }
+
+  presetButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
       const preset = PRESETS.find((p) => p.id === btn.dataset.presetId);
-      if (preset) void engine.applyPreset(preset);
+      if (!preset) return;
+      void engine.applyPreset(preset);
+      setActivePreset(preset.id);
     });
   });
 

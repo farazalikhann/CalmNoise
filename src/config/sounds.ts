@@ -45,6 +45,11 @@ const ICONS = {
   fireplace:
     '<path d="M12 21c-3.5 0-6-2.4-6-5.7C6 12 8 10 8 7.5c1 1 1.5 2 1.5 3C10.5 8 10 5.5 12 3c0 2.5 1 3.5 2.5 5.5.7-1 1-2 .8-3.3C17 6.5 18 8.7 18 11c0 1.5-.7 2.6-1.5 3.5.4-1.6-.1-2.6-1-3.3.3 2-1 3-2 4.3-.6.8-.5 1.6.5 2.3-1 .3-1.3 1.7-2 3.2Z" stroke-linejoin="round"/>',
   fan: '<circle cx="12" cy="12" r="1.6"/><path d="M12 10.4c-1.5-2.8-.7-5.4 1-6.4 1.8-1 3.9 0 4 2 .1 2-2 3.3-5 4.4Z" stroke-linejoin="round"/><path d="M13.4 12.9c2.8 1.5 4 4 3.2 5.9-.8 1.9-3 2.3-4.6 1.1-1.6-1.2-1.5-3.7-1-7Z" stroke-linejoin="round"/><path d="M10.6 12.9c-2.8 1.5-5.4.7-6.4-1-1-1.8 0-3.9 2-4 2-.1 3.3 2 4.4 5Z" stroke-linejoin="round"/>',
+  target:
+    '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 1.5v3.2M12 19.3v3.2M1.5 12h3.2M19.3 12h3.2" stroke-linecap="round"/>',
+  moon: '<path d="M20 14.2A8.5 8.5 0 1 1 9.8 4a7 7 0 0 0 10.2 10.2Z" stroke-linejoin="round"/>',
+  book: '<path d="M4 4.8A2.3 2.3 0 0 1 6.3 2.5H20v17.8H6.3A2.3 2.3 0 0 0 4 22.6V4.8Z" stroke-linejoin="round"/><path d="M4 19.3A2.3 2.3 0 0 1 6.3 17H20" stroke-linecap="round"/>',
+  plane: '<path d="m3 11 18-8-8 18-2-8-8-2Z" stroke-linejoin="round"/>',
 } as const;
 
 export const SOUNDS: SoundDef[] = [
@@ -145,25 +150,72 @@ export interface Preset {
   name: string;
   description: string;
   mix: Partial<Record<string, number>>; // soundId -> volume (0..1); omitted ids are turned off
+  /** Inner <svg> markup (stroke-based, 24x24 viewBox), no outer <svg> tag. */
+  icon: string;
 }
 
 export const PRESETS: Preset[] = [
   {
     id: 'deep-focus',
     name: 'Deep Focus',
-    description: 'Brown noise with a hint of cafe hum to hold your attention.',
-    mix: { brown: 0.6, cafe: 0.2 },
+    description: 'Brown noise with a touch of rain to hold your attention.',
+    mix: { brown: 0.5, rain: 0.3 },
+    icon: ICONS.target,
   },
   {
     id: 'rainy-cafe',
     name: 'Rainy Cafe',
     description: 'Rain against the window with soft cafe ambience.',
-    mix: { rain: 0.6, cafe: 0.45, thunderstorm: 0.1 },
+    mix: { rain: 0.45, cafe: 0.4, thunderstorm: 0.15 },
+    icon: ICONS.cafe,
   },
   {
     id: 'sleep',
     name: 'Sleep',
-    description: 'Pink noise, gentle rain, and a crackling fire to drift off to.',
-    mix: { pink: 0.35, rain: 0.3, fireplace: 0.2 },
+    description: 'Brown noise, gentle waves, and a soft fan to drift off to.',
+    mix: { brown: 0.35, ocean: 0.3, fan: 0.2 },
+    icon: ICONS.moon,
+  },
+  {
+    id: 'thunderstorm-night',
+    name: 'Thunderstorm Night',
+    description: 'Heavy rain and rolling thunder with a crackling fire.',
+    mix: { rain: 0.5, thunderstorm: 0.45, fireplace: 0.2 },
+    icon: ICONS.thunder,
+  },
+  {
+    id: 'cozy-cabin',
+    name: 'Cozy Cabin',
+    description: 'A warm fire, quiet forest, and light rain outside.',
+    mix: { fireplace: 0.55, forest: 0.25, rain: 0.2 },
+    icon: ICONS.fireplace,
+  },
+  {
+    id: 'beach-day',
+    name: 'Beach Day',
+    description: 'Rolling ocean waves with distant forest birdsong.',
+    mix: { ocean: 0.6, forest: 0.15 },
+    icon: ICONS.ocean,
+  },
+  {
+    id: 'study-hall',
+    name: 'Study Hall',
+    description: 'Cafe murmur, white noise, and rain for heads-down work.',
+    mix: { cafe: 0.35, white: 0.3, rain: 0.2 },
+    icon: ICONS.book,
+  },
+  {
+    id: 'forest-walk',
+    name: 'Forest Walk',
+    description: 'Birdsong and rustling leaves with light rain and distant waves.',
+    mix: { forest: 0.6, rain: 0.2, ocean: 0.1 },
+    icon: ICONS.forest,
+  },
+  {
+    id: 'airplane-cabin',
+    name: 'Airplane Cabin',
+    description: 'A steady engine hum to mask cabin noise on a flight.',
+    mix: { white: 0.45, fan: 0.4 },
+    icon: ICONS.plane,
   },
 ];

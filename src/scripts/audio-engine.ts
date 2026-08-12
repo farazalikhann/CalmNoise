@@ -434,8 +434,18 @@ export class AudioEngine extends EventTarget {
       const targetVolume = preset.mix[runtime.def.id];
       if (typeof targetVolume === 'number') {
         runtime.state.volume = targetVolume;
-        runtime.state.on = true;
-        tasks.push(this.startSound(runtime));
+        if (runtime.state.on && runtime.source) {
+          // Already playing and staying on — cross-fade to the new volume
+          // in place rather than restarting it (avoids an audible restart
+          // and a leaked duplicate source playing underneath).
+          const gain = this.getOrCreateGain(runtime);
+          gain.gain.cancelScheduledValues(ctx.currentTime);
+          gain.gain.setValueAtTime(gain.gain.value, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + FADE_SECONDS);
+        } else {
+          runtime.state.on = true;
+          tasks.push(this.startSound(runtime));
+        }
       } else if (runtime.state.on) {
         this.stopSound(runtime);
         runtime.state.on = false;
