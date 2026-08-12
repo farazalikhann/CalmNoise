@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Mixer from '../components/Mixer.astro';
-import AdSlot from '../components/AdSlot.astro';
 
 const faqs = [
   {
@@ -46,35 +45,26 @@ const faqSchema = {
 ---
 
 <BaseLayout jsonLd={[faqSchema]}>
-  <div data-focus-hide>
-    <AdSlot placement="headerBanner" label="Header Banner" class="max-w-6xl px-4 pt-6 sm:px-6" />
-  </div>
+  <!-- AdSense: Header Banner (temporarily removed — see README "Restoring ads" for how to bring it back) -->
 
-  <section class="mx-auto max-w-6xl px-4 pb-2 pt-10 text-center sm:px-6 sm:pt-14" data-focus-hide>
-    <h1 class="text-3xl font-extralight tracking-wide text-text sm:text-4xl sm:tracking-wider">
+  <section class="mx-auto max-w-6xl px-4 pb-3 pt-8 text-center sm:px-6 sm:pt-12 lg:pb-6 lg:pt-16" data-focus-hide>
+    <h1 class="text-2xl font-extralight tracking-wide text-text sm:text-4xl sm:tracking-wider lg:text-6xl">
       White Noise &amp; Focus Sounds
     </h1>
-    <p class="mx-auto mt-4 max-w-2xl text-balance text-base font-light leading-relaxed text-text-muted sm:text-lg">
+    <p class="mx-auto mt-3 max-w-2xl text-balance text-sm font-light leading-relaxed text-text-muted sm:mt-4 sm:text-lg lg:text-xl">
       Mix white, pink, and brown noise with rain, ocean, forest, and fireplace sounds — a free,
       private ambient sound mixer for focus, study, and sleep. Nothing to install, nothing to sign up for.
     </p>
   </section>
 
-  <div class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[1fr_300px]">
-    <div>
-      <Mixer />
-      <div class="mt-2">
-        <AdSlot placement="belowMixer" label="Below Mixer" />
-      </div>
-    </div>
-    <aside class="hidden lg:block" data-focus-hide>
-      <div class="sticky top-24">
-        <AdSlot placement="sidebar" label="Sidebar" class="min-h-[250px]" />
-      </div>
-    </aside>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <Mixer />
+    <!-- AdSense: Below Mixer (temporarily removed — see README "Restoring ads" for how to bring it back) -->
   </div>
+  <!-- AdSense: Sidebar (temporarily removed along with its lg:grid-cols-[1fr_300px] two-column
+       wrapper — see README "Restoring ads" for how to bring it back) -->
 
-  <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6" data-focus-hide>
+  <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-24" data-focus-hide>
     <div class="glass px-6 py-8 sm:px-10 sm:py-10">
       <h2 class="text-xl font-light tracking-wide text-text">How to use white noise for focus and sleep</h2>
       <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">

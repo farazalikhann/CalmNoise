@@ -238,12 +238,29 @@ h1, h2, h3 {
    Sound grid + cards
    =========================================================================== */
 
+/* Mobile-first: 2 columns on small phones, never a cramped single column. */
 #sound-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
   align-items: stretch;
   width: 100%;
+}
+
+/* Larger phones and tablets: 3 columns. */
+@media (min-width: 400px) {
+  #sound-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.875rem;
+  }
+}
+
+/* Desktop: widen and let the row adapt to fill the available width. */
+@media (min-width: 1024px) {
+  #sound-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
 }
 
 .sound-card {
@@ -319,29 +336,45 @@ h1, h2, h3 {
 
 /* ===========================================================================
    Range sliders — glass track + glass bead thumb
+   ===========================================================================
+   The <input> itself is a full 44px-tall touch target (real, laid-out height
+   — not just the visual thumb), since native range inputs treat their whole
+   box as draggable, not just the thumb graphic. The visible track is a thin
+   bar drawn via a separate pseudo-element and vertically centered inside
+   that taller box, so it still *looks* like a slim glass track.
    =========================================================================== */
 
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
+  display: block;
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  touch-action: pan-x;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.16);
-  outline: none;
-  cursor: pointer;
   transition: background 250ms ease-out;
 }
 
-input[type="range"]:hover {
+input[type="range"]:hover::-webkit-slider-runnable-track {
   background: rgba(255, 255, 255, 0.22);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px; /* centers the 18px thumb on the 4px track */
   border-radius: 50%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(220, 235, 232, 0.75));
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -360,14 +393,20 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 input[type="range"]::-moz-range-track {
+  width: 100%;
   height: 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.16);
+  transition: background 250ms ease-out;
+}
+
+input[type="range"]:hover::-moz-range-track {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(220, 235, 232, 0.75));
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -425,4 +464,35 @@ html.focus-mode #mixer-transport {
   transform: translate(-50%, -50%) scale(1.02);
   width: min(92vw, 440px);
   z-index: 40;
+}
+
+/* ===========================================================================
+   Mobile mini-player — the master transport floats fixed to the bottom of
+   the viewport below the desktop breakpoint, so play/pause and master volume
+   stay reachable while scrolling through the sound grid / content below.
+   (html.focus-mode's centered positioning above wins over this when both
+   apply, since it has higher selector specificity.)
+   =========================================================================== */
+
+@media (max-width: 1023px) {
+  #mixer-transport {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    z-index: 30;
+  }
+
+  /* Reserve room after the last content on the page (the footer — a sibling
+     of <main>, not a descendant, so this can't live on `main` alone) so the
+     fixed bar never covers it once the user scrolls all the way down. */
+  footer {
+    padding-bottom: 6.5rem;
+  }
+}
+
+/* Buttons and range inputs shouldn't flash the default mobile tap highlight. */
+button,
+input[type="range"] {
+  -webkit-tap-highlight-color: transparent;
 }

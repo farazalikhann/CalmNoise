@@ -85,17 +85,58 @@ pick up new entries automatically; no other file needs to change.
 
 ## Configuring AdSense
 
-Ad placements (header banner, below the mixer, and a desktop sidebar) already
-exist as responsive placeholder boxes marked with `<!-- AdSense: ... -->`
-comments. To go live:
+`src/config/ads.ts` (client ID, the three `AD_SLOTS` IDs, and the
+`ADSENSE_ENABLED` flag) and the reusable `src/components/AdSlot.astro`
+component are both still fully intact and functional — only the three ad
+placements were removed from the visible page (see "Restoring ads" below).
+When you're ready to go live:
 
 1. Edit `src/config/ads.ts`: set `ADSENSE_CLIENT_ID`, the three `AD_SLOTS`
    IDs, and flip `ADSENSE_ENABLED` to `true`.
 2. Uncomment the AdSense loader `<script>` in `src/layouts/BaseLayout.astro`
    (search for "AdSense loader").
+3. Re-add the ad placements per "Restoring ads" below.
 
-Until then, the placeholders render as empty, clearly-labeled boxes — the
-site never ships a broken or misconfigured ad call.
+Until `ADSENSE_ENABLED` is `true`, `<AdSlot>` renders an empty, clearly-labeled
+box instead of a real ad unit — the site never ships a broken or
+misconfigured ad call.
+
+### Restoring ads
+
+Ads are temporarily off (planned to come back in about a month). All three
+placements were `<AdSlot>` usages in `src/pages/index.astro`; each one's
+former spot is marked with an `<!-- AdSense: ... -->` HTML comment so they're
+easy to find. To bring a slot back, re-add the import and the matching JSX
+below at its comment:
+
+```astro
+import AdSlot from '../components/AdSlot.astro';
+```
+
+- **Header Banner** — directly inside `<BaseLayout>`, above the hero `<section>`:
+  ```astro
+  <AdSlot placement="headerBanner" label="Header Banner" class="max-w-6xl px-4 pt-6 sm:px-6" />
+  ```
+- **Below Mixer** — inside the `<div class="mx-auto max-w-6xl px-4 sm:px-6">` wrapper, right after `<Mixer />`:
+  ```astro
+  <AdSlot placement="belowMixer" label="Below Mixer" />
+  ```
+- **Sidebar** — this one also needs its two-column layout back, since that
+  wrapper was removed along with it. Replace the
+  `<div class="mx-auto max-w-6xl px-4 sm:px-6"><Mixer /></div>` block with:
+  ```astro
+  <div class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[1fr_300px]">
+    <div>
+      <Mixer />
+      <!-- Below Mixer AdSlot goes here too, see above -->
+    </div>
+    <aside class="hidden lg:block" data-focus-hide>
+      <div class="sticky top-24">
+        <AdSlot placement="sidebar" label="Sidebar" class="min-h-[250px]" />
+      </div>
+    </aside>
+  </div>
+  ```
 
 ## SEO
 

@@ -3,48 +3,50 @@ import { SOUNDS, PRESETS } from '../config/sounds';
 import SoundCard from './SoundCard.astro';
 ---
 
-<section id="mixer" class="mx-auto max-w-6xl px-4 py-10 sm:px-6" aria-label="Ambient sound mixer">
-  <!-- Transport: master play/pause + master volume -->
+<section id="mixer" class="py-8 lg:py-12" aria-label="Ambient sound mixer">
+  <!-- Transport: master play/pause + master volume. Fixed to the bottom of
+       the viewport on mobile (see #mixer-transport in global.css) so it's
+       always reachable while scrolling. -->
   <div
     id="mixer-transport"
-    class="glass flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+    class="glass flex items-center justify-between gap-3 p-3 lg:gap-4 lg:p-5"
   >
-    <div class="flex items-center gap-4">
+    <div class="flex min-w-0 items-center gap-3 lg:gap-4">
       <button
         type="button"
         id="master-toggle"
-        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent text-bg shadow-lg shadow-accent/25 transition-all duration-300 ease-out hover:scale-105 hover:shadow-accent/40 active:scale-95"
+        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent text-bg shadow-lg shadow-accent/25 transition-all duration-300 ease-out hover:scale-105 hover:shadow-accent/40 active:scale-95 lg:h-14 lg:w-14"
         aria-pressed="false"
         aria-label="Play mix"
       >
-        <svg id="master-icon-play" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+        <svg id="master-icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" class="lg:h-[22px] lg:w-[22px]">
           <path d="M8 5v14l11-7L8 5Z"></path>
         </svg>
-        <svg id="master-icon-pause" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true" class="hidden">
+        <svg id="master-icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" class="hidden lg:h-[22px] lg:w-[22px]">
           <path d="M7 5h4v14H7zM13 5h4v14h-4z"></path>
         </svg>
       </button>
-      <div>
-        <p class="text-sm font-medium tracking-wide text-text" id="master-status">Paused</p>
-        <p class="text-xs font-light text-text-faint" data-focus-hide>Tap any sound below, or press play to resume your last mix.</p>
+      <div class="min-w-0">
+        <p class="truncate text-sm font-medium tracking-wide text-text lg:text-base" id="master-status">Paused</p>
+        <p class="hidden text-xs font-light text-text-faint lg:block" data-focus-hide>Tap any sound below, or press play to resume your last mix.</p>
       </div>
     </div>
 
-    <div class="flex items-center gap-3 sm:w-56">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" class="shrink-0 text-text-muted">
+    <div class="flex min-w-[110px] flex-1 items-center gap-2 lg:w-56 lg:flex-none lg:gap-3">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" class="hidden shrink-0 text-text-muted sm:block">
         <path d="M4 9v6h4l5 4V5L8 9H4Z" stroke-linejoin="round"></path>
       </svg>
-      <input type="range" min="0" max="100" value="80" id="master-volume" aria-label="Master volume" />
+      <input type="range" min="0" max="100" value="80" id="master-volume" class="min-w-0 flex-1" aria-label="Master volume" />
     </div>
   </div>
 
   <!-- Presets -->
-  <div class="mt-6 flex flex-wrap gap-2" role="group" aria-label="Presets" data-focus-hide>
+  <div class="mt-6 flex flex-wrap gap-2 lg:mt-10 lg:gap-3" role="group" aria-label="Presets" data-focus-hide>
     {
       PRESETS.map((preset) => (
         <button
           type="button"
-          class="preset-btn glass px-4 py-2 text-sm font-light text-text-muted transition-all duration-300 ease-out hover:text-text"
+          class="preset-btn glass inline-flex min-h-11 items-center justify-center px-4 py-2 text-sm font-light text-text-muted transition-all duration-300 ease-out hover:text-text lg:text-base"
           style="border-radius: 999px;"
           data-preset-id={preset.id}
           title={preset.description}
@@ -56,13 +58,13 @@ import SoundCard from './SoundCard.astro';
   </div>
 
   <!-- Sound grid -->
-  <div class="mt-6" id="sound-grid" data-focus-hide>
+  <div class="mt-6 lg:mt-8" id="sound-grid" data-focus-hide>
     {SOUNDS.map((sound) => <SoundCard sound={sound} />)}
   </div>
 
   <!-- Sleep timer -->
   <div
-    class="glass mt-8 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+    class="glass mt-8 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between lg:mt-12 lg:p-5"
     data-focus-hide
   >
     <div class="flex items-center gap-2">
@@ -74,9 +76,9 @@ import SoundCard from './SoundCard.astro';
       <span id="sleep-countdown" class="text-xs text-accent" hidden></span>
     </div>
     <div class="flex flex-wrap items-center gap-2">
-      <button type="button" class="sleep-btn glass px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;" data-minutes="15">15 min</button>
-      <button type="button" class="sleep-btn glass px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;" data-minutes="30">30 min</button>
-      <button type="button" class="sleep-btn glass px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;" data-minutes="60">60 min</button>
+      <button type="button" class="sleep-btn glass inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;" data-minutes="15">15 min</button>
+      <button type="button" class="sleep-btn glass inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;" data-minutes="30">30 min</button>
+      <button type="button" class="sleep-btn glass inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;" data-minutes="60">60 min</button>
       <div class="flex items-center gap-1.5">
         <input
           type="number"
@@ -84,13 +86,13 @@ import SoundCard from './SoundCard.astro';
           min="1"
           max="480"
           placeholder="Custom"
-          class="glass w-20 px-3 py-1.5 text-xs text-text placeholder:text-text-faint"
+          class="glass min-h-11 w-20 px-3 py-1.5 text-xs text-text placeholder:text-text-faint"
           style="border-radius: 999px;"
           aria-label="Custom sleep timer in minutes"
         />
-        <button type="button" id="sleep-custom-start" class="glass px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;">Set</button>
+        <button type="button" id="sleep-custom-start" class="glass inline-flex min-h-11 items-center justify-center px-3 py-1.5 text-xs font-light text-text-muted transition-all duration-300 ease-out hover:text-text" style="border-radius: 999px;">Set</button>
       </div>
-      <button type="button" id="sleep-cancel" class="rounded-full px-3 py-1.5 text-xs font-light text-text-faint underline decoration-dotted transition-colors duration-300 hover:text-text" hidden>Cancel</button>
+      <button type="button" id="sleep-cancel" class="inline-flex min-h-11 items-center justify-center rounded-full px-3 py-1.5 text-xs font-light text-text-faint underline decoration-dotted transition-colors duration-300 hover:text-text" hidden>Cancel</button>
     </div>
   </div>
 </section>
