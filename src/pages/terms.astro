@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../config/site';
+import { BASE as base } from '../utils/base';
 
 const lastUpdated = 'August 12, 2026';
 ---
@@ -8,7 +9,6 @@ const lastUpdated = 'August 12, 2026';
 <BaseLayout
   title={`Terms of Use — ${SITE.name}`}
   description={`Terms of use for ${SITE.name}, a free browser-based ambient sound mixer.`}
-  path="/terms"
 >
   <article class="mx-auto max-w-2xl px-4 py-14 sm:px-6" data-focus-hide>
    <div class="glass px-6 py-8 sm:px-10 sm:py-10">
@@ -57,7 +57,7 @@ const lastUpdated = 'August 12, 2026';
     <h2 class="mt-8 text-lg font-light tracking-wide text-text">Contact</h2>
     <p class="mt-2 text-sm font-light leading-relaxed text-text-muted">
       Questions about these terms? Visit the
-      <a href="/contact" class="text-accent underline decoration-dotted underline-offset-2">contact page</a>.
+      <a href={`${base}contact`} class="text-accent underline decoration-dotted underline-offset-2">contact page</a>.
     </p>
    </div>
   </article>

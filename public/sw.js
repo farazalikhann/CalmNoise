@@ -12,13 +12,18 @@
 const CACHE_VERSION = 'v1';
 const CACHE_NAME = `calmnoise-${CACHE_VERSION}`;
 
+// Self-derived from where this script is actually served, so the same static
+// file works whether deployed at the domain root or under a project-page
+// base path like /CalmNoise/ — no build-time templating needed.
+const BASE = self.location.pathname.replace(/sw\.js$/, '');
+
 const PRECACHE_URLS = [
-  '/',
-  '/manifest.webmanifest',
-  '/favicon.svg',
-  '/worklets/noise-processor.js',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  BASE,
+  `${BASE}manifest.webmanifest`,
+  `${BASE}favicon.svg`,
+  `${BASE}worklets/noise-processor.js`,
+  `${BASE}icons/icon-192.png`,
+  `${BASE}icons/icon-512.png`,
 ];
 
 self.addEventListener('install', (event) => {
@@ -51,8 +56,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/_astro/') || url.pathname.startsWith('/worklets/') ||
-      url.pathname.startsWith('/sounds/') || url.pathname.startsWith('/icons/')) {
+  if (
+    url.pathname.startsWith(`${BASE}_astro/`) ||
+    url.pathname.startsWith(`${BASE}worklets/`) ||
+    url.pathname.startsWith(`${BASE}sounds/`) ||
+    url.pathname.startsWith(`${BASE}icons/`)
+  ) {
     event.respondWith(staleWhileRevalidate(request));
   }
 });
@@ -65,7 +74,7 @@ async function networkFirst(request) {
     return response;
   } catch {
     const cached = await cache.match(request);
-    return cached || cache.match('/');
+    return cached || cache.match(BASE);
   }
 }
 

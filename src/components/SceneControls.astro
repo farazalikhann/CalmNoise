@@ -2,6 +2,7 @@
 // Floating, purely visual controls: the background-scene picker and the
 // Focus Mode toggle. No audio code is touched by src/scripts/theme-controls.ts.
 import { BACKGROUND_THEMES } from '../config/backgrounds';
+import { BASE as base } from '../utils/base';
 ---
 
 <div class="fixed bottom-4 right-4 z-30 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
@@ -42,7 +43,10 @@ import { BACKGROUND_THEMES } from '../config/backgrounds';
               aria-checked="false"
               title={theme.name}
             >
-              <span class={`scene-swatch scene-${theme.id}`} />
+              <span
+                class={`scene-swatch scene-${theme.id}`}
+                style={`--scene-image: url('${base}backgrounds/${theme.file}');`}
+              />
               <span class="text-center text-[10px] font-light leading-tight text-text-muted transition-colors duration-300 group-hover:text-text">
                 {theme.name}
               </span>

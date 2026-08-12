@@ -1,10 +1,11 @@
 ---
 import { SITE } from '../config/site';
+import { BASE } from '../utils/base';
 
 interface Props {
   title?: string;
   description?: string;
-  path?: string; // e.g. "/about" — defaults to current URL path
+  path?: string; // Full base-inclusive path, e.g. "/CalmNoise/about" — defaults to Astro.url.pathname, which already includes the base. Prefer leaving this unset.
   noindex?: boolean;
   /** Extra JSON-LD objects to inject in addition to the default WebApplication schema. */
   jsonLd?: Record<string, unknown>[];
@@ -19,13 +20,14 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(path, SITE.url).toString();
-const ogImage = new URL('/og-image.png', SITE.url).toString();
+const ogImage = new URL(`${BASE}og-image.png`, SITE.url).toString();
+const appRootURL = new URL(BASE, SITE.url).toString();
 
 const webApplicationSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: SITE.name,
-  url: SITE.url,
+  url: appRootURL,
   description: SITE.description,
   applicationCategory: 'LifestyleApplication',
   operatingSystem: 'Any (runs in web browser)',

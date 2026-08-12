@@ -1,5 +1,6 @@
 ---
 import { SITE } from '../config/site';
+import { BASE as base } from '../utils/base';
 const year = new Date().getFullYear();
 ---
 
@@ -14,10 +15,10 @@ const year = new Date().getFullYear();
         </p>
       </div>
       <nav aria-label="Footer" class="grid grid-cols-2 gap-x-10 gap-y-2 text-sm font-light text-text-muted sm:flex sm:gap-8">
-        <a href="/about" class="transition-colors duration-300 hover:text-text">About</a>
-        <a href="/contact" class="transition-colors duration-300 hover:text-text">Contact</a>
-        <a href="/privacy-policy" class="transition-colors duration-300 hover:text-text">Privacy Policy</a>
-        <a href="/terms" class="transition-colors duration-300 hover:text-text">Terms of Use</a>
+        <a href={`${base}about`} class="transition-colors duration-300 hover:text-text">About</a>
+        <a href={`${base}contact`} class="transition-colors duration-300 hover:text-text">Contact</a>
+        <a href={`${base}privacy-policy`} class="transition-colors duration-300 hover:text-text">Privacy Policy</a>
+        <a href={`${base}terms`} class="transition-colors duration-300 hover:text-text">Terms of Use</a>
       </nav>
     </div>
     <p class="mt-8 text-xs font-light text-text-faint">

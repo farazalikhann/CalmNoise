@@ -1,12 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../config/site';
+import { BASE as base } from '../utils/base';
 ---
 
 <BaseLayout
   title={`About — ${SITE.name}`}
   description="Learn about CalmNoise, a free, private, client-side white noise and ambient sound mixer built for focus and sleep."
-  path="/about"
 >
   <article class="mx-auto max-w-2xl px-4 py-14 sm:px-6" data-focus-hide>
     <div class="glass px-6 py-8 sm:px-10 sm:py-10">
@@ -29,7 +29,7 @@ import { SITE } from '../config/site';
       </p>
       <p class="mt-4 text-sm font-light leading-relaxed text-text-muted">
         Have feedback or a sound you'd like to see added? Reach out via the
-        <a href="/contact" class="text-accent underline decoration-dotted underline-offset-2">contact page</a>.
+        <a href={`${base}contact`} class="text-accent underline decoration-dotted underline-offset-2">contact page</a>.
       </p>
     </div>
   </article>

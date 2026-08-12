@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import BackgroundScene from '../components/BackgroundScene.astro';
 import SceneControls from '../components/SceneControls.astro';
 import { SITE } from '../config/site';
+import { BASE } from '../utils/base';
 
 interface Props {
   title?: string;
@@ -24,9 +25,9 @@ const { title, description, path, noindex, jsonLd } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content={SITE.themeColor} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href={`${BASE}favicon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${BASE}icons/icon-192.png`} />
+    <link rel="manifest" href={`${BASE}manifest.webmanifest`} />
     <meta name="generator" content={Astro.generator} />
 
     <SEO title={title} description={description} path={path} noindex={noindex} jsonLd={jsonLd} />
@@ -55,9 +56,11 @@ const { title, description, path, noindex, jsonLd } = Astro.props;
     </div>
 
     <script>
+      import { BASE } from '../utils/base';
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(() => {
+          navigator.serviceWorker.register(`${BASE}sw.js`).catch(() => {
             // Offline support is a progressive enhancement — ignore registration failures.
           });
         });

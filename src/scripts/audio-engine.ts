@@ -1,7 +1,10 @@
 import { SOUNDS, PRESETS, type SoundDef, type Preset } from '../config/sounds';
+import { BASE } from '../utils/base';
 
 const STORAGE_KEY = 'calmnoise:mix:v1';
-const WORKLET_URL = '/worklets/noise-processor.js';
+// Base-aware — resolves correctly whether deployed at the domain root or
+// under a GitHub Pages project path like /CalmNoise/.
+const WORKLET_URL = `${BASE}worklets/noise-processor.js`;
 const RAMP_SECONDS = 0.05;
 
 export interface SoundState {
@@ -318,7 +321,7 @@ export class AudioEngine extends EventTarget {
     const runtime = this.runtimes.get(def.id)!;
     if (runtime.buffer) return runtime.buffer;
 
-    const response = await fetch(`/sounds/${def.file}`);
+    const response = await fetch(`${BASE}sounds/${def.file}`);
     if (!response.ok) {
       throw new Error(`Missing audio file: ${def.file}`);
     }
