@@ -1,5 +1,5 @@
 ---
-import { SOUNDS, PRESETS, RESET_ICON } from '../config/sounds';
+import { SOUNDS, PRESETS, RESET_ICON, SHARE_ICON } from '../config/sounds';
 import SoundCard from './SoundCard.astro';
 ---
 
@@ -28,7 +28,7 @@ import SoundCard from './SoundCard.astro';
       </button>
       <div class="min-w-0">
         <p class="truncate text-sm font-medium tracking-wide text-text lg:text-lg" id="master-status">Paused</p>
-        <p class="hidden text-xs font-light text-text-faint lg:block lg:text-sm" data-focus-hide>Tap any sound below, or press play to resume your last mix.</p>
+        <p class="hidden text-xs font-light text-text-faint lg:block lg:text-sm" id="master-hint" data-focus-hide>Tap any sound below, or press play to resume your last mix.</p>
       </div>
     </div>
 
@@ -72,6 +72,28 @@ import SoundCard from './SoundCard.astro';
 
     <button
       type="button"
+      id="share-mix"
+      class="glass inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm font-light text-text-faint transition-all duration-300 ease-out hover:text-text-muted lg:px-5 lg:py-3 lg:text-base"
+      style="border-radius: 999px;"
+      title="Copy a shareable link to this mix"
+      aria-label="Copy a shareable link to this mix"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="15"
+        height="15"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        class="shrink-0 opacity-60"
+        aria-hidden="true"
+        set:html={SHARE_ICON}
+      />
+      <span>Share</span>
+    </button>
+
+    <button
+      type="button"
       id="reset-mix"
       class="glass inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm font-light text-text-faint transition-all duration-300 ease-out hover:text-text-muted lg:px-5 lg:py-3 lg:text-base"
       style="border-radius: 999px;"
@@ -91,6 +113,16 @@ import SoundCard from './SoundCard.astro';
       />
       <span>Reset</span>
     </button>
+  </div>
+
+  <div
+    id="share-toast"
+    class="glass pointer-events-none left-1/2 top-4 z-40 -translate-x-1/2 whitespace-nowrap px-4 py-2.5 text-sm font-light text-text opacity-0 transition-opacity duration-300 sm:top-6"
+    style="border-radius: 999px; position: fixed; width: max-content; max-width: calc(100vw - 2rem);"
+    role="status"
+    aria-live="polite"
+  >
+    Link copied to clipboard
   </div>
 
   <!-- Sound grid -->

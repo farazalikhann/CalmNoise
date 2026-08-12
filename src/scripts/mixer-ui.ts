@@ -1,4 +1,5 @@
 import { AudioEngine, SOUNDS, PRESETS, type SoundState } from './audio-engine';
+import { buildShareURL } from '../utils/mix-share';
 
 export function initMixer() {
   const engine = new AudioEngine();
@@ -10,6 +11,7 @@ export function initMixer() {
   const masterIconPlay = document.getElementById('master-icon-play')!;
   const masterIconPause = document.getElementById('master-icon-pause')!;
   const masterStatus = document.getElementById('master-status')!;
+  const masterHint = document.getElementById('master-hint');
   const masterVolume = document.getElementById('master-volume') as HTMLInputElement;
 
   const sleepCountdown = document.getElementById('sleep-countdown')!;
@@ -70,6 +72,37 @@ export function initMixer() {
   }
 
   // ---------------------------------------------------------------------
+  // Shared-mix link restoration (visual only — never autoplays; playback
+  // still only ever starts from an explicit user gesture, same as always)
+  // ---------------------------------------------------------------------
+
+  if (engine.restoredFromShare) {
+    if (masterHint) {
+      masterHint.textContent = 'A shared mix is ready — press play to start it.';
+    }
+
+    const activeSounds = SOUNDS.filter((s) => engine.getSoundState(s.id)?.on);
+    if (activeSounds.length > 0) {
+      const summary = activeSounds
+        .map((s) => `${s.name} ${Math.round((engine.getSoundState(s.id)?.volume ?? 0) * 100)}%`)
+        .join(', ');
+      const shareTitle = 'Custom Mix — CalmNoise';
+      const shareDescription = `A shared ambient sound mix: ${summary}. Listen free at CalmNoise — no sign-up required.`;
+
+      document.title = shareTitle;
+      setMetaContent('meta[property="og:title"]', shareTitle);
+      setMetaContent('meta[property="og:description"]', shareDescription);
+      setMetaContent('meta[name="twitter:title"]', shareTitle);
+      setMetaContent('meta[name="twitter:description"]', shareDescription);
+      setMetaContent('meta[name="description"]', shareDescription);
+    }
+  }
+
+  function setMetaContent(selector: string, value: string) {
+    document.querySelector(selector)?.setAttribute('content', value);
+  }
+
+  // ---------------------------------------------------------------------
   // Master transport
   // ---------------------------------------------------------------------
 
@@ -123,6 +156,40 @@ export function initMixer() {
   document.getElementById('reset-mix')?.addEventListener('click', () => {
     void engine.resetAll();
     setActivePreset(null);
+  });
+
+  // ---------------------------------------------------------------------
+  // Share
+  // ---------------------------------------------------------------------
+
+  const shareToast = document.getElementById('share-toast');
+  let shareToastTimeout: number | null = null;
+
+  function showToast(message: string) {
+    if (!shareToast) return;
+    shareToast.textContent = message;
+    shareToast.style.opacity = '1';
+    if (shareToastTimeout !== null) window.clearTimeout(shareToastTimeout);
+    shareToastTimeout = window.setTimeout(() => {
+      shareToast.style.opacity = '0';
+    }, 2400);
+  }
+
+  document.getElementById('share-mix')?.addEventListener('click', () => {
+    const activeSounds = SOUNDS.filter((s) => engine.getSoundState(s.id)?.on).map((s) => ({
+      id: s.id,
+      volumePercent: Math.round((engine.getSoundState(s.id)?.volume ?? 0) * 100),
+    }));
+    const shareUrl = buildShareURL(activeSounds, Math.round(engine.master * 100));
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(shareUrl)
+        .then(() => showToast('Link copied to clipboard'))
+        .catch(() => window.prompt('Copy this link to share your mix:', shareUrl));
+    } else {
+      window.prompt('Copy this link to share your mix:', shareUrl);
+    }
   });
 
   // ---------------------------------------------------------------------

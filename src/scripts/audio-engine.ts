@@ -1,5 +1,6 @@
 import { SOUNDS, PRESETS, type SoundDef, type Preset } from '../config/sounds';
 import { BASE } from '../utils/base';
+import { parseSharedMix } from '../utils/mix-share';
 
 const STORAGE_KEY = 'calmnoise:mix:v1';
 // Base-aware — resolves correctly whether deployed at the domain root or
@@ -54,6 +55,7 @@ export class AudioEngine extends EventTarget {
 
   private persistTimeout: number | null = null;
   private mediaSessionReady = false;
+  private sharedMixApplied = false;
 
   constructor() {
     super();
@@ -68,7 +70,7 @@ export class AudioEngine extends EventTarget {
         state: { on: false, volume: def.defaultVolume, unavailable: false, loading: false },
       });
     }
-    this.loadPersisted();
+    this.loadInitialState();
 
     // Mobile browsers may suspend the AudioContext when the tab is
     // backgrounded despite an active Media Session; resume it once the user
@@ -97,6 +99,13 @@ export class AudioEngine extends EventTarget {
 
   getSoundState(id: string): SoundState | undefined {
     return this.runtimes.get(id)?.state;
+  }
+
+  /** True when the current mix came from a shared-link `?mix=` URL param
+   *  rather than localStorage or defaults — lets the UI show a distinct
+   *  "shared mix ready" prompt instead of the usual "resume your last mix". */
+  get restoredFromShare(): boolean {
+    return this.sharedMixApplied;
   }
 
   get sleepRemainingMs(): number | null {
@@ -567,6 +576,30 @@ export class AudioEngine extends EventTarget {
   // ---------------------------------------------------------------------
   // Persistence
   // ---------------------------------------------------------------------
+
+  /** A shared-link mix (?mix=id:vol,...&vol=NN) takes priority over
+   *  localStorage for this page load. This only ever sets in-memory state
+   *  (on/volume) — it never starts audio, since that requires a user
+   *  gesture; the transport stays paused until the user presses play. */
+  private loadInitialState() {
+    const shared = typeof window !== 'undefined' ? parseSharedMix(new URLSearchParams(window.location.search)) : null;
+
+    if (shared) {
+      for (const [id, volume] of Object.entries(shared.sounds)) {
+        const runtime = this.runtimes.get(id);
+        if (!runtime) continue;
+        runtime.state.on = true;
+        runtime.state.volume = volume;
+      }
+      if (shared.masterVolume !== null) {
+        this.masterVolume = shared.masterVolume;
+      }
+      this.sharedMixApplied = true;
+      return;
+    }
+
+    this.loadPersisted();
+  }
 
   private loadPersisted() {
     try {

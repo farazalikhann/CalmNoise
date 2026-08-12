@@ -52,10 +52,14 @@ const ICONS = {
   plane: '<path d="m3 11 18-8-8 18-2-8-8-2Z" stroke-linejoin="round"/>',
   reset:
     '<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8" stroke-linecap="round"/><path d="M4 4v4h4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16" stroke-linecap="round"/><path d="M20 20v-4h-4" stroke-linecap="round" stroke-linejoin="round"/>',
+  share:
+    '<path d="M9 15 15 9" stroke-linecap="round"/><path d="M10 6.5 11.3 5a4 4 0 1 1 5.5 5.7L15.3 12" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 17.5 12.7 19a4 4 0 1 1-5.5-5.7L8.7 12" stroke-linecap="round" stroke-linejoin="round"/>',
 } as const;
 
 /** Reused by the mixer's "Reset" control — not tied to any single sound. */
 export const RESET_ICON = ICONS.reset;
+/** Reused by the mixer's "Share" control — not tied to any single sound. */
+export const SHARE_ICON = ICONS.share;
 
 export const SOUNDS: SoundDef[] = [
   {
