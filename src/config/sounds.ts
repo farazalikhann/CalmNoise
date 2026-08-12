@@ -50,7 +50,12 @@ const ICONS = {
   moon: '<path d="M20 14.2A8.5 8.5 0 1 1 9.8 4a7 7 0 0 0 10.2 10.2Z" stroke-linejoin="round"/>',
   book: '<path d="M4 4.8A2.3 2.3 0 0 1 6.3 2.5H20v17.8H6.3A2.3 2.3 0 0 0 4 22.6V4.8Z" stroke-linejoin="round"/><path d="M4 19.3A2.3 2.3 0 0 1 6.3 17H20" stroke-linecap="round"/>',
   plane: '<path d="m3 11 18-8-8 18-2-8-8-2Z" stroke-linejoin="round"/>',
+  reset:
+    '<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8" stroke-linecap="round"/><path d="M4 4v4h4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16" stroke-linecap="round"/><path d="M20 20v-4h-4" stroke-linecap="round" stroke-linejoin="round"/>',
 } as const;
+
+/** Reused by the mixer's "Reset" control — not tied to any single sound. */
+export const RESET_ICON = ICONS.reset;
 
 export const SOUNDS: SoundDef[] = [
   {

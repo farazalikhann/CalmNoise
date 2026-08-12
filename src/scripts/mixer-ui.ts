@@ -88,11 +88,12 @@ export function initMixer() {
     setActivePreset(null);
   });
 
-  engine.onMasterChange(({ isRunning }) => {
+  engine.onMasterChange(({ isRunning, masterVolume: vol }) => {
     masterToggle.setAttribute('aria-pressed', String(isRunning));
     masterIconPlay.classList.toggle('hidden', isRunning);
     masterIconPause.classList.toggle('hidden', !isRunning);
     masterStatus.textContent = isRunning ? 'Playing' : 'Paused';
+    masterVolume.value = String(Math.round(vol * 100));
   });
 
   // ---------------------------------------------------------------------
@@ -117,6 +118,11 @@ export function initMixer() {
       void engine.applyPreset(preset);
       setActivePreset(preset.id);
     });
+  });
+
+  document.getElementById('reset-mix')?.addEventListener('click', () => {
+    void engine.resetAll();
+    setActivePreset(null);
   });
 
   // ---------------------------------------------------------------------

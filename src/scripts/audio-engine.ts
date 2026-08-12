@@ -8,6 +8,7 @@ const WORKLET_URL = `${BASE}worklets/noise-processor.js`;
 // Fade duration for both starting and stopping a sound (including the
 // individual per-sound stop the sleep timer triggers when it ends).
 const FADE_SECONDS = 0.4;
+const DEFAULT_MASTER_VOLUME = 0.8;
 
 export interface SoundState {
   on: boolean;
@@ -43,7 +44,7 @@ export class AudioEngine extends EventTarget {
   private workletSupported = true;
 
   private runtimes = new Map<string, SoundRuntime>();
-  private masterVolume = 0.8;
+  private masterVolume = DEFAULT_MASTER_VOLUME;
   private isRunning = false;
 
   private sleepEndsAt: number | null = null;
@@ -433,6 +434,13 @@ export class AudioEngine extends EventTarget {
     for (const runtime of this.runtimes.values()) {
       const targetVolume = preset.mix[runtime.def.id];
       if (typeof targetVolume === 'number') {
+        // runtime.state.volume is set to the preset's value FIRST, before
+        // either branch below runs, and nothing after this point ever
+        // resets it back to def.defaultVolume — startSound() (for a
+        // sound that's off or still lazy-loading) ramps its gain to
+        // whatever runtime.state.volume holds once ready, which is this
+        // preset value; the in-place ramp branch below uses the same
+        // `targetVolume` directly. Either way the preset value is final.
         runtime.state.volume = targetVolume;
         if (runtime.state.on && runtime.source) {
           // Already playing and staying on — cross-fade to the new volume
@@ -458,6 +466,38 @@ export class AudioEngine extends EventTarget {
     }
     this.emitMaster();
     this.schedulePersist();
+  }
+
+  /** Stops everything (with the usual fade), restores every sound and the
+   *  master volume to their defaults, cancels any sleep timer, and clears
+   *  the saved mix so a refresh doesn't bring the old mix back. */
+  async resetAll(): Promise<void> {
+    this.cancelSleepTimer(false);
+
+    for (const runtime of this.runtimes.values()) {
+      if (runtime.state.on) {
+        this.stopSound(runtime);
+        runtime.state.on = false;
+      }
+      runtime.state.volume = runtime.def.defaultVolume;
+      runtime.state.unavailable = false;
+      this.emitSound(runtime);
+    }
+
+    this.masterVolume = DEFAULT_MASTER_VOLUME;
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setTargetAtTime(this.masterVolume, this.ctx.currentTime, 0.01);
+    }
+
+    this.isRunning = false;
+    this.emitMaster();
+    this.emitSleep();
+
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Storage blocked — nothing to clear.
+    }
   }
 
   // ---------------------------------------------------------------------

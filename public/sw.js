@@ -9,7 +9,7 @@
 //  - Cross-origin requests (ads, etc.) are left untouched.
 //
 // Bump CACHE_VERSION whenever you want to force clients to drop old caches.
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `calmnoise-${CACHE_VERSION}`;
 
 // Self-derived from where this script is actually served, so the same static

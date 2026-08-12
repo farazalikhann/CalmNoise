@@ -1,5 +1,5 @@
 ---
-import { SOUNDS, PRESETS } from '../config/sounds';
+import { SOUNDS, PRESETS, RESET_ICON } from '../config/sounds';
 import SoundCard from './SoundCard.astro';
 ---
 
@@ -41,32 +41,56 @@ import SoundCard from './SoundCard.astro';
   </div>
 
   <!-- Presets -->
-  <div class="mt-6 flex flex-wrap gap-2 lg:mt-10 lg:gap-3" role="group" aria-label="Presets" data-focus-hide>
-    {
-      PRESETS.map((preset) => (
-        <button
-          type="button"
-          class="preset-btn glass inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm font-light text-text-muted transition-all duration-300 ease-out hover:text-text lg:px-5 lg:py-3 lg:text-base"
-          style="border-radius: 999px;"
-          data-preset-id={preset.id}
-          data-active="false"
-          title={preset.description}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            class="shrink-0 opacity-70"
-            aria-hidden="true"
-            set:html={preset.icon}
-          />
-          <span>{preset.name}</span>
-        </button>
-      ))
-    }
+  <div class="mt-6 flex flex-wrap items-center gap-2 lg:mt-10 lg:gap-3" data-focus-hide>
+    <div class="flex flex-wrap gap-2 lg:gap-3" role="group" aria-label="Presets">
+      {
+        PRESETS.map((preset) => (
+          <button
+            type="button"
+            class="preset-btn glass inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm font-light text-text-muted transition-all duration-300 ease-out hover:text-text lg:px-5 lg:py-3 lg:text-base"
+            style="border-radius: 999px;"
+            data-preset-id={preset.id}
+            data-active="false"
+            title={preset.description}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              class="shrink-0 opacity-70"
+              aria-hidden="true"
+              set:html={preset.icon}
+            />
+            <span>{preset.name}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    <button
+      type="button"
+      id="reset-mix"
+      class="glass inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm font-light text-text-faint transition-all duration-300 ease-out hover:text-text-muted lg:px-5 lg:py-3 lg:text-base"
+      style="border-radius: 999px;"
+      title="Reset all sounds and volumes"
+      aria-label="Reset all sounds and volumes"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="15"
+        height="15"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        class="shrink-0 opacity-60"
+        aria-hidden="true"
+        set:html={RESET_ICON}
+      />
+      <span>Reset</span>
+    </button>
   </div>
 
   <!-- Sound grid -->
