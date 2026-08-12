@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Mixer from '../components/Mixer.astro';
+import PomodoroPanel from '../components/PomodoroPanel.astro';
 
 const faqs = [
   {
@@ -61,6 +62,8 @@ const faqSchema = {
     <Mixer />
     <!-- AdSense: Below Mixer (temporarily removed — see README "Restoring ads" for how to bring it back) -->
   </div>
+
+  <PomodoroPanel />
   <!-- AdSense: Sidebar (temporarily removed along with its lg:grid-cols-[1fr_300px] two-column
        wrapper — see README "Restoring ads" for how to bring it back) -->
 

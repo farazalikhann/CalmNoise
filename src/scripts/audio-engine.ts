@@ -10,6 +10,10 @@ const WORKLET_URL = `${BASE}worklets/noise-processor.js`;
 // individual per-sound stop the sleep timer triggers when it ends).
 const FADE_SECONDS = 0.4;
 const DEFAULT_MASTER_VOLUME = 0.8;
+// Longer, gentler transition for the Pomodoro timer's break-time volume
+// ducking — a whole-mix duck reads better as a slow settle than the snappy
+// per-sound fade used for starting/stopping an individual sound.
+const DUCK_FADE_SECONDS = 1.5;
 
 export interface SoundState {
   on: boolean;
@@ -41,6 +45,10 @@ export class AudioEngine extends EventTarget {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private sleepGain: GainNode | null = null;
+  /** Independent multiplier used only by duck()/undoDuck() (e.g. the
+   *  Pomodoro timer during breaks) — never touched by master volume or the
+   *  sleep timer, so all three stay fully independent of each other. */
+  private duckGain: GainNode | null = null;
   private workletLoaded = false;
   private workletSupported = true;
 
@@ -129,12 +137,17 @@ export class AudioEngine extends EventTarget {
     const sleep = ctx.createGain();
     sleep.gain.value = 1;
 
+    const duck = ctx.createGain();
+    duck.gain.value = 1;
+
     master.connect(sleep);
-    sleep.connect(ctx.destination);
+    sleep.connect(duck);
+    duck.connect(ctx.destination);
 
     this.ctx = ctx;
     this.masterGain = master;
     this.sleepGain = sleep;
+    this.duckGain = duck;
 
     this.setupMediaSession();
 
@@ -248,6 +261,32 @@ export class AudioEngine extends EventTarget {
     }
     this.schedulePersist();
     this.emitMaster();
+  }
+
+  // ---------------------------------------------------------------------
+  // External volume ducking — used by the Pomodoro timer during breaks.
+  // Multiplies on top of the master volume and sleep-timer fade via its own
+  // independent gain stage, so it never touches (or is persisted as part
+  // of) the user's actual volume settings, and never stops any sound.
+  // ---------------------------------------------------------------------
+
+  /** Smoothly multiplies the overall output by `factor` (0..1). */
+  duck(factor: number) {
+    if (!this.ctx || !this.duckGain) return;
+    const now = this.ctx.currentTime;
+    this.duckGain.gain.cancelScheduledValues(now);
+    this.duckGain.gain.setValueAtTime(this.duckGain.gain.value, now);
+    this.duckGain.gain.linearRampToValueAtTime(clamp01(factor), now + DUCK_FADE_SECONDS);
+  }
+
+  /** Smoothly undoes a previous duck() call. Safe to call even if nothing
+   *  is currently ducked (a harmless 1 -> 1 ramp). */
+  undoDuck() {
+    if (!this.ctx || !this.duckGain) return;
+    const now = this.ctx.currentTime;
+    this.duckGain.gain.cancelScheduledValues(now);
+    this.duckGain.gain.setValueAtTime(this.duckGain.gain.value, now);
+    this.duckGain.gain.linearRampToValueAtTime(1, now + DUCK_FADE_SECONDS);
   }
 
   // ---------------------------------------------------------------------

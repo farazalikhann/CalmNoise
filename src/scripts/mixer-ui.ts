@@ -1,9 +1,8 @@
-import { AudioEngine, SOUNDS, PRESETS, type SoundState } from './audio-engine';
+import { SOUNDS, PRESETS, type SoundState } from './audio-engine';
 import { buildShareURL } from '../utils/mix-share';
+import { engine } from './engine-instance';
 
 export function initMixer() {
-  const engine = new AudioEngine();
-
   const grid = document.getElementById('sound-grid');
   if (!grid) return; // Mixer not on this page.
 
